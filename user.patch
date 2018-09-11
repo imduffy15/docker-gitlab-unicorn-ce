@@ -1,0 +1,30 @@
+--- user.rb	2018-07-30 23:59:33.000000000 +0000
++++ new_user.rb	2018-09-11 10:34:00.649933026 +0000
+@@ -65,6 +65,12 @@
+ 
+           user.external = true if external_provider? && user&.new_record?
+ 
++          if user
++            # Check if there is overlap between the user's groups and the external groups
++            # setting then set user as external or internal.
++            user.admin = !(auth_hash.groups & oauth2_config.admin_groups).empty? if admin_groups_enabled?
++          end
++
+           user
+         end
+ 
+@@ -256,6 +262,14 @@
+           Gitlab::AppLogger
+         end
+ 
++        def oauth_config
++          Gitlab::Auth::OAuth::Config
++        end
++
++        def admin_groups_enabled?
++           !oauth_config.admin_groups.nil?
++        end
++
+         def oauth_provider_disabled?
+           Gitlab::CurrentSettings.current_application_settings
+                                 .disabled_oauth_sign_in_sources
