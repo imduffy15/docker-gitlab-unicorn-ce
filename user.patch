@@ -1,6 +1,29 @@
 --- user.rb	2018-09-11 14:28:22.000000000 +0100
-+++ new_user.rb	2018-09-11 14:35:51.000000000 +0100
-@@ -57,6 +57,14 @@
++++ new_user.rb	2018-09-12 00:31:39.000000000 +0100
+@@ -45,6 +45,22 @@
+           gl_user.block if block_after_save
+ 
+           log.info "(#{provider}) saving user #{auth_hash.email} from login with extern_uid => #{auth_hash.uid}"
++
++          auth_hash.groups.each do |group|
++            log.info "Processing #{group} for user #{auth_hash.email}"
++            gl_group = Group.find_by_path_or_name(group)
++            if gl_group
++              if gl_group.has_master?(gl_user)
++                log.info "#{auth_hash.email} is already a member of #{group}"
++              else
++                log.info "adding user #{auth_hash.email} to the group #{group}"
++                gl_group.add_user(gl_user, :master)
++              end
++            else
++              log.info "No matching gitlab group found for #{group}"
++            end
++          end
++
+           gl_user
+         rescue ActiveRecord::RecordInvalid => e
+           log.info "(#{provider}) Error saving user #{auth_hash.uid} (#{auth_hash.email}): #{gl_user.errors.full_messages}"
+@@ -57,6 +73,14 @@
            @gl_user = find_user
          end
  
@@ -15,14 +38,13 @@
          def find_user
            user = find_by_uid_and_provider
  
-@@ -65,6 +73,13 @@
+@@ -65,6 +89,12 @@
  
            user.external = true if external_provider? && user&.new_record?
  
 +          if user
 +            # Check if there is overlap between the user's groups and the external groups
 +            # setting then set user as external or internal.
-+            log.info "!!!!!!!!!!!!!!!! GROUP INFO: #{auth_hash.to_json} #{oauth_config.to_json}"
 +            user.admin = !(auth_hash.groups & oauth_config.admin_groups).empty? if admin_groups_enabled?
 +          end
 +
