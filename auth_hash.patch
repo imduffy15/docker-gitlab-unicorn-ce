@@ -1,11 +1,11 @@
---- auth_hash.rb	2018-09-11 10:37:07.339451045 +0000
-+++ new_auth_hash.rb	2018-09-11 10:37:12.919451061 +0000
+--- auth_hash.rb	2018-09-11 13:49:37.000000000 +0100
++++ new_auth_hash.rb	2018-09-11 14:37:26.000000000 +0100
 @@ -9,6 +9,10 @@
            @auth_hash = auth_hash
          end
  
 +        def groups
-+          Array.wrap(auth_hash.extra[:raw_info].all[Gitlab::Auth::OAuth::Config.groups])
++          Array.wrap(auth_hash.extra[:raw_info][Gitlab::Auth::OAuth::Config.groups])
 +        end
 +
          def uid
