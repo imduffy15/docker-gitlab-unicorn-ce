@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/gitlab-org/build/cng/gitlab-unicorn-ce:v11.1.4
+FROM registry.gitlab.com/gitlab-org/build/cng/gitlab-unicorn-ce:v11.2.3
 
 USER root
 
