@@ -9,11 +9,11 @@
 +            log.info "Processing #{group} for user #{auth_hash.email}"
 +            gl_group = Group.find_by_path_or_name(group)
 +            if gl_group
-+              if gl_group.has_master?(gl_user)
++              if gl_group.member?(gl_user)
 +                log.info "#{auth_hash.email} is already a member of #{group}"
 +              else
 +                log.info "adding user #{auth_hash.email} to the group #{group}"
-+                gl_group.add_user(gl_user, :master)
++                gl_group.add_user(gl_user, :developer)
 +              end
 +            else
 +              log.info "No matching gitlab group found for #{group}"
