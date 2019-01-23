@@ -2,7 +2,7 @@ sudo: required
 env:
   global:
     - DOCKER_IMAGE=imduffy15/gitlab-unicorn-ce
-    - DOCKER_TAG=v11.4.4
+    - DOCKER_TAG=v11.7.0
 services:
   - docker
 script:
