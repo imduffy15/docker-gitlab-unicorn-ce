@@ -1,9 +1,9 @@
---- user.rb	2018-09-11 14:28:22.000000000 +0100
-+++ new_user.rb	2018-09-12 00:31:39.000000000 +0100
-@@ -45,6 +45,22 @@
+--- user.rb.org	2019-02-22 11:41:15.000000000 +0000
++++ user.rb	2019-02-22 11:42:44.000000000 +0000
+@@ -47,12 +47,36 @@
            gl_user.block if block_after_save
  
-           log.info "(#{provider}) saving user #{auth_hash.email} from login with extern_uid => #{auth_hash.uid}"
+           log.info "(#{provider}) saving user #{auth_hash.email} from login with admin => #{gl_user.admin}, extern_uid => #{auth_hash.uid}"
 +
 +          auth_hash.groups.each do |group|
 +            log.info "Processing #{group} for user #{auth_hash.email}"
@@ -23,8 +23,7 @@
            gl_user
          rescue ActiveRecord::RecordInvalid => e
            log.info "(#{provider}) Error saving user #{auth_hash.uid} (#{auth_hash.email}): #{gl_user.errors.full_messages}"
-@@ -57,6 +73,14 @@
-           @gl_user = find_user
+           [self, e.record.errors]
          end
  
 +        def oauth_config
@@ -35,10 +34,10 @@
 +           !oauth_config.admin_groups.nil?
 +        end
 +
-         def find_user
-           user = find_by_uid_and_provider
+         def gl_user
+           return @gl_user if defined?(@gl_user)
  
-@@ -65,6 +89,12 @@
+@@ -67,6 +91,12 @@
  
            user.external = true if external_provider? && user&.new_record?
  
